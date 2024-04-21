@@ -4,17 +4,18 @@ USERID=$(id -u)
 TIMESTAMP=$(date +%F-%H-%M-%S)
 SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
 LOGFILE=/tmp/$SCRIPT_NAME-$TIMESTAMP.log
-R="\E[31M"
-G="\E[32M"
-N="\E[0M"
+R="\e[31m"
+G="\e[32m"
+Y="\e[33m"
+N="\e[0m"
 
 VALIDATE(){
  if [ $1 -ne 0 ]
  then
-    echo "$2... $R FAILURE $N"
+    echo -e "$2... $R FAILURE $N"
     exit 1
 else 
-    echo "$2... $G SUCCESS $N"
+    echo -e "$2... $G SUCCESS $N"
 fi
 }                          
 
@@ -30,7 +31,7 @@ dnf install mysql-server -y &>>$LOGFILE
 VALIDATE $? "Installing MySQL Server"
 
 systemctl enable mysqld -y &>>$LOGFILE
-VALIDATE $? "Installing MySQL Server"
+VALIDATE $? "Enabling MySQL Server"
 
 systemctl start mysqld -y &>>$LOGFILE
 VALIDATE $? "Starting MySQL Server"
