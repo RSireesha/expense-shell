@@ -8,6 +8,8 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
+echo "Please enter DB password:"
+read  mysql_root_password
 
 VALIDATE(){
    if [ $1 -ne 0 ]
@@ -40,27 +42,50 @@ VALIDATE $? "Installing nodejs"
 # useradd expense
 # VALIDATE $? "Creating expense user"
 
-id expense 
+id expense &>>$LOGFILE
 if [ $? -ne 0 ]
 then 
-    useradd expense 
+    useradd expense &>>$LOGFILE 
     VALIDATE $? "Creating expense user"
 else 
    echo -e "Expense user already created...$Y SKIPPING $N"
 fi
 
-mkdir -p /app
+mkdir -p /app &>>$LOGFILE
 VALIDATE $? "Creating app directory"
 
 curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
-VALIDATE $? "Downloading backend code"
+VALIDATE $? "Downloading backend code" &>>$LOGFILE
 
-cd /app
-unzip /tmp/backend.zip
+cd /app &>>$LOGFILE
+unzip /tmp/backend.zip &>>$LOGFILE
 VALIDATE $? "Extracted backend code"
 
-npm install
+npm install &>>$LOGFILE
 VALIDATE $? "Installing nodejs dependencies"
+
+cp /home/ec2-user/expense-shell/backend.service /etc/systemd/system/backend.service
+VALIDATE $? "Copied backend service" &>>$LOGFILE
+
+systemctl daemon-reload &>>$LOGFILE
+VALIDATE $? "Daemon Reload"
+
+systemctl start backend &>>$LOGFILE
+VALIDATE $? "Starting backend"
+
+systemctl enable backend &>>$LOGFILE
+VALIDATE $? "Enabling backend"
+
+dnf install mysql -y &>>$LOGFILE
+VALIDATE $? "Installing MYSQL Client"
+
+mysql -h db.sireesha.online -uroot -p${mysql_root_password} < /app/schema/backend.sql &>>$LOGFILE
+VALIDATE $? "Schema loading"
+
+systemctl restart backend &>>$LOGFILE
+VALIDATE $? "Restarting backend"
+
+
 
 
 
