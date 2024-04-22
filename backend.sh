@@ -57,7 +57,7 @@ VALIDATE $? "Creating app directory"
 curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
 VALIDATE $? "Downloading backend code" &>>$LOGFILE
 
-cd /app &>>$LOGFILE
+cd /app 
 unzip /tmp/backend.zip &>>$LOGFILE
 VALIDATE $? "Extracted backend code"
 
