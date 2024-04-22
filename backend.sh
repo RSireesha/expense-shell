@@ -29,15 +29,12 @@ else
 fi
 
 dnf module disable nodejs -y &>>$LOGFILE
-VALIDATE $1 "Disabling default nodejs"
+VALIDATE $? "Disabling default nodejs"
 
 dnf module enable nodejs:20 -y &>>$LOGFILE
-VALIDATE $1 "Enabling nodejs:20 version"
+VALIDATE $? "Enabling nodejs:20 version"
 
 dnf install nodejs -y &>>$LOGFILE
-VALIDATE $1 "Installing nodejs"
-
-useradd expense
-VALIDATE $1 "Creating expense user"
+VALIDATE $? "Installing nodejs"
 
 
